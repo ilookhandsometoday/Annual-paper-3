@@ -7,15 +7,17 @@ class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.kg = Keygen()
 
-    def test_find_q(self):
-        print(self.kg.q)
-        print(sum(self.kg.w))
-        self.assertTrue(self.kg.q > sum(self.kg.w))
+    def test_find_modulus(self):
+        print("_find_modulus")
+        print(self.kg.modulus)
+        print(sum(self.kg.seq))
+        self.assertTrue(self.kg.modulus > sum(self.kg.seq))
 
-    def test_find_r(self):
-        print(self.kg.q)
-        print(self.kg.r)
-        self.assertTrue(math.gcd(self.kg.q, self.kg.r) == 1 and self.kg.q > self.kg.r > 1)
+    def test_find_multiplier(self):
+        print("_find_multiplier")
+        print(self.kg.modulus)
+        print(self.kg.multiplier)
+        self.assertTrue(math.gcd(self.kg.modulus, self.kg.multiplier) == 1 and self.kg.modulus > self.kg.multiplier > 1)
 
     def test_generate_si_sequence(self):
         seq = Keygen.generate_si_sequence(128)  # 128 because that's the size of chunks
@@ -26,6 +28,7 @@ class MyTestCase(unittest.TestCase):
                 test = False
                 break
             seq_sum += element
+        print("generate_si_sequence")
         print(seq)
         print(sum(seq))
         self.assertTrue(test)

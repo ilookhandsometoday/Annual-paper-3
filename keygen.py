@@ -8,12 +8,15 @@ _RNG = random.SystemRandom()
 class Keygen:
 
     def __init__(self):
-        # w is the sequence for the private key
+        # seq is the sequence for the private key
         # I'm using 128 elements because that's gonna be the size of the chunks
         # that the original message is going to be split into for encryption
-        self.w = Keygen.generate_si_sequence(128)
-        self.q = Keygen._find_q(self.w)
-        self.r = Keygen._find_r(self.q)
+        self.seq = Keygen.generate_si_sequence(128)
+        # modulus and multiplier are coprime numbers used for key generation
+        self.modulus = Keygen._find_modulus(self.seq)
+        self.multiplier = Keygen._find_multiplier(self.modulus)
+
+        #self.open_key
 
     @staticmethod
     def generate_si_sequence(n):
@@ -26,17 +29,17 @@ class Keygen:
         return sequence
 
     @staticmethod
-    def _find_r(q):
+    def _find_multiplier(modulus):
         coprime = False
-        r = 0
+        multiplier = 0
         while not coprime:
-            r = _RNG.randint(2, q-1)
-            if math.gcd(q, r) == 1:
+            multiplier = _RNG.randint(2, modulus-1)
+            if math.gcd(modulus, multiplier) == 1:
                 coprime = True
-        return r
+        return multiplier
 
     @staticmethod
-    def _find_q(w):
-        w_sum = sum(w)
-        q = _RNG.randint(w_sum + 1, w_sum + sys.maxsize)
-        return q
+    def _find_modulus(seq):
+        seq_sum = sum(seq)
+        modulus = _RNG.randint(seq_sum + 1, seq_sum + sys.maxsize)
+        return modulus
