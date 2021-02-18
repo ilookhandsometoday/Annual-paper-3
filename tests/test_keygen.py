@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(math.gcd(self.kg.modulus, self.kg.multiplier) == 1 and self.kg.modulus > self.kg.multiplier > 1)
 
     def test_generate_si_sequence(self):
-        seq = Keygen.generate_si_sequence(128)  # 128 because that's the size of chunks
+        seq = Keygen.generate_si_sequence()
         seq_sum = 0
         test = True
         for element in seq:
