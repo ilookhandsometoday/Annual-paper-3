@@ -8,15 +8,29 @@ class Keygen:
 
     def __init__(self):
         # seq is the sequence for the private key
-        self.seq = Keygen.generate_si_sequence()
+        self._seq = []
         # modulus and multiplier are coprime numbers used for key generation
-        self.modulus = Keygen._find_modulus()
-        self.multiplier = Keygen._find_multiplier(self.modulus)
+        self._modulus = 0
+        self._multiplier = 0
 
+        self._generate_si_sequence()
+        self._find_modulus()
+        self._find_multiplier()
         #self.open_key
 
-    @staticmethod
-    def generate_si_sequence():
+    @property
+    def seq(self):
+        return self._seq.copy()
+
+    @property
+    def modulus(self):
+        return self._modulus
+
+    @property
+    def multiplier(self):
+        return self._multiplier
+
+    def _generate_si_sequence(self):
         """Generates a superincreasing sequence according to recommendations from
         \"Hiding information and signatures in trapdoor knapsacks\""""
         sequence = []
@@ -24,10 +38,9 @@ class Keygen:
             lower_bound = (2 ** (index - 1) - 1) * (2 ** 100) + 1
             upper_bound = (2 ** (index - 1))*(2**100)
             sequence.append(_RNG.randint(lower_bound, upper_bound))
-        return sequence
+        self._seq = sequence
 
-    @staticmethod
-    def _find_multiplier(modulus):
+    def _find_multiplier(self):
         """Finds a multiplier almost according to recommendations from
         \"Hiding information and signatures in trapdoor knapsacks.\"
         Almost, because the method for making sure that multiplier is
@@ -35,14 +48,14 @@ class Keygen:
         coprime = False
         multiplier = 0
         while not coprime:
-            multiplier = _RNG.randint(2, modulus - 2)
-            if math.gcd(modulus, multiplier) == 1:
+            multiplier = _RNG.randint(2, self._modulus - 2)
+            if math.gcd(self._modulus, multiplier) == 1:
                 coprime = True
-        return multiplier
+        self._multiplier = multiplier
 
-    @staticmethod
-    def _find_modulus():
+    def _find_modulus(self):
         """Finds a modulus according to recommendations from
-               \"Hiding information and signatures in trapdoor knapsacks\""""
+               \"Hiding informati   on and signatures in trapdoor knapsacks\""""
         modulus = _RNG.randint((2**201) + 1, (2**202) - 1)
-        return modulus
+        self._modulus = modulus
+
