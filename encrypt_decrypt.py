@@ -11,5 +11,6 @@ def _to_binary(text):
     as_bytes = bytearray(text, "utf-8")
     binary_values = []
     for byte in as_bytes:
-        binary_values.append(bin(byte))
+        binary_values.append(bin(byte)[2:])
+
     return binary_values
