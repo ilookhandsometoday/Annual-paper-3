@@ -18,6 +18,9 @@ class MyTestCase(unittest.TestCase):
             sum += element
         self.assertTrue(test)
 
+    def test_modulo(self):
+        self.assertTrue(self.kg.modulus > sum(self.kg.seq))
+
     def test_modulo_multiplier(self):
         self.assertTrue(math.gcd(self.kg.modulus, self.kg.multiplier) == 1)
 
