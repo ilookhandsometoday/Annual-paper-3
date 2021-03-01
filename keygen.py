@@ -12,11 +12,12 @@ class Keygen:
         # modulus and multiplier are coprime numbers used for key generation
         self._modulus = 0
         self._multiplier = 0
+        self._open_key = 0
 
         self._generate_si_sequence()
         self._find_modulus()
         self._find_multiplier()
-        #self.open_key
+        self._find_open_key()
 
     @property
     def seq(self):
@@ -55,7 +56,15 @@ class Keygen:
 
     def _find_modulus(self):
         """Finds a modulus according to recommendations from
-               \"Hiding informati   on and signatures in trapdoor knapsacks\""""
+               \"Hiding information and signatures in trapdoor knapsacks\""""
         modulus = _RNG.randint((2**201) + 1, (2**202) - 1)
         self._modulus = modulus
+
+    def _find_open_key(self):
+        open_key = []
+        for number in self._seq:
+            open_key.append(self._multiplier*number % self._modulus)
+        self._open_key = open_key
+
+
 
