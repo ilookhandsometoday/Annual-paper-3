@@ -31,6 +31,10 @@ class Keygen:
     def multiplier(self):
         return self._multiplier
 
+    @property
+    def open_key(self):
+        return self._open_key
+
     def _generate_si_sequence(self):
         """Generates a superincreasing sequence according to recommendations from
         \"Hiding information and signatures in trapdoor knapsacks\""""

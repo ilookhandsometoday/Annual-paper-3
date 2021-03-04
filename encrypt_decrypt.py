@@ -1,7 +1,7 @@
 import keygen
 
 def encrypt(text, keygen):
-
+    text_as_binary = _to_binary(text)
     pass
 
 def decrypt(text, keygen):
