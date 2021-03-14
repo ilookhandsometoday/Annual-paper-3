@@ -3,13 +3,11 @@ def encrypt(text, keygen):
     hundred_bit_messages = []
     # message is split into chunks of 100 bits as per recommendations from Merkle and Hellman
     for hundred_bits in _chunk_text(text_as_binary):
-        bit_number = 0
-    # a variable for the final sum
-    encrypted_bits = 0
-    for bit in hundred_bits:
-        encrypted_bits += int(bit) * keygen.open_key[bit_number]
-    bit_number += 1
-    hundred_bit_messages.append(encrypted_bits)
+        # a variable for the final sum
+        encrypted_bits = 0
+        for bit, open_key_element in zip(hundred_bits, keygen.open_key):
+            encrypted_bits += int(bit) * open_key_element
+        hundred_bit_messages.append(encrypted_bits)
     return hundred_bit_messages
 
 def decrypt(text, keygen):
