@@ -1,5 +1,16 @@
 def encrypt(text, keygen):
-    pass
+    text_as_binary = "".join(_to_binary(text))
+    hundred_bit_messages = []
+    # message is split into chunks of 100 bits as per recommendations from Merkle and Hellman
+    for hundred_bits in _chunk_text(text_as_binary):
+        bit_number = 0
+    # a variable for the final sum
+    encrypted_bits = 0
+    for bit in hundred_bits:
+        encrypted_bits += int(bit) * keygen.open_key[bit_number]
+    bit_number += 1
+    hundred_bit_messages.append(encrypted_bits)
+    return hundred_bit_messages
 
 def decrypt(text, keygen):
     pass
@@ -12,4 +23,8 @@ def _to_binary(text):
     #removes leading zeros from a binary representation of a byte
     binary_values_uniform = [(8 - len(char_as_bits))*"0" + char_as_bits for char_as_bits in binary_values]
     return binary_values_uniform
+
+def _chunk_text(text, length):
+    """Separates text into chunks of given length"""
+    return (text[0+i:length+i] for i in range(0, len(text), 100))
 

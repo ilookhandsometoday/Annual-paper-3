@@ -68,4 +68,3 @@ class Keygen:
         self._open_key = [self._multiplier * number % self._modulus for number in self._seq]
 
 
-
