@@ -65,10 +65,7 @@ class Keygen:
         self._modulus = modulus
 
     def _find_open_key(self):
-        open_key = []
-        for number in self._seq:
-            open_key.append(self._multiplier*number % self._modulus)
-        self._open_key = open_key
+        self._open_key = [self._multiplier * number % self._modulus for number in self._seq]
 
 
 
