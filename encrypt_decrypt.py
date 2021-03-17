@@ -14,8 +14,18 @@ def encrypt(text, keygen):
 
 
 def decrypt(encrypted_chunks, keygen):
+    decrypted_chunks = []
     for e_chunk in encrypted_chunks:
-        pass
+        target_sum = e_chunk * keygen.multiplier_mod_inverse % keygen.modulus
+        indices_of_ones = []
+        for element in reversed(keygen.seq):
+            if element <= target_sum:
+                target_sum = target_sum - element
+                indices_of_ones.append(keygen.seq.index(element))
+        decrypted_chunks.append(_restore_chunk(indices_of_ones))
+    decrypted_message = "".join(decrypted_chunks)
+    return decrypted_message
+    #TODO finish this function
 
 
 def _to_binary(text):
@@ -31,4 +41,15 @@ def _to_binary(text):
 def _chunk_text(text, length):
     """Separates text into chunks of given length"""
     return (text[0+i:length+i] for i in range(0, len(text), length))
+
+def _restore_chunk(indices_of_ones):
+    """Restores a 100 bit chunk from a list of indices of 1 in a chunk"""
+    restored_chunk = ""
+    for i in range(100):
+        if i in indices_of_ones:
+            restored_chunk = restored_chunk + "1"
+        else:
+            restored_chunk = restored_chunk + "0"
+    return restored_chunk
+
 

@@ -16,6 +16,9 @@ class MyTestCase(unittest.TestCase):
         as_binary = encrypt_decrypt._to_binary("cd")
         self.assertEqual(as_binary, ["01100011", "01100100"])
 
+    def test__chunk_text_(self):
+        _chunk_text("12345678")
+
 
 if __name__ == '__main__':
     unittest.main()
