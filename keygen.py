@@ -18,6 +18,7 @@ class Keygen:
         self._find_modulus()
         self._find_multiplier()
         self._find_open_key()
+        self._find_multiplier_mod_inverse()
 
     @property
     def seq(self):
@@ -34,6 +35,10 @@ class Keygen:
     @property
     def open_key(self):
         return self._open_key
+
+    @property
+    def multiplier_mod_inverse(self):
+        return self._multiplier_mod_inverse
 
     def _generate_si_sequence(self):
         """Generates a superincreasing sequence according to recommendations from
@@ -66,5 +71,8 @@ class Keygen:
 
     def _find_open_key(self):
         self._open_key = [self._multiplier * number % self._modulus for number in self._seq]
+
+    def _find_multiplier_modular_inverse(self):
+        self._multiplier_modular_inverse = pow(self._multiplier, -1, self._modulus)
 
 
