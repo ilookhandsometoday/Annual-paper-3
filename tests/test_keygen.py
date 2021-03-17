@@ -24,6 +24,9 @@ class MyTestCase(unittest.TestCase):
     def test_modulo_multiplier(self):
         self.assertTrue(math.gcd(self.kg.modulus, self.kg.multiplier) == 1)
 
+    def test_multiplier_mod_inverse(self):
+        self.assertEqual(self.kg.multiplier*self.kg.multiplier_mod_inverse % self.kg.modulus, 1)
+
 
 
 if __name__ == '__main__':

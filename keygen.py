@@ -13,6 +13,7 @@ class Keygen:
         self._modulus = 0
         self._multiplier = 0
         self._open_key = 0
+        self._multiplier_mod_inverse = 0
 
         self._generate_si_sequence()
         self._find_modulus()
@@ -72,7 +73,7 @@ class Keygen:
     def _find_open_key(self):
         self._open_key = [self._multiplier * number % self._modulus for number in self._seq]
 
-    def _find_multiplier_modular_inverse(self):
-        self._multiplier_modular_inverse = pow(self._multiplier, -1, self._modulus)
+    def _find_multiplier_mod_inverse(self):
+        self._multiplier_mod_inverse = pow(self._multiplier, -1, self._modulus)
 
 
