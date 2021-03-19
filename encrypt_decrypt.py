@@ -43,14 +43,14 @@ def _to_binary(text):
 def _to_text(text_as_bytes):
     """Transforms an iterable of bytes in binary form into a text using UTF-8 encoding"""
     #turn a binary representation of a byte into an integer to later turn it into a byte array
-    bytes_as_integers = [int(byte, 2) for byte in text_as_bytes]
+    bytes_as_integers = (int(byte, 2) for byte in text_as_bytes)
     byte_array = bytearray(bytes_as_integers)
     text = byte_array.decode("utf-8")
     return text
 
 
 def _chunk_text(text, length):
-    """Separates text into chunks of given length"""
+    """Separates text into chunks of given length and returns a generator"""
     return (text[0+i:length+i] for i in range(0, len(text), length))
 
 def _restore_chunk(indices_of_ones):
