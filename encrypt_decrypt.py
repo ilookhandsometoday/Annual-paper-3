@@ -14,6 +14,8 @@ def encrypt(text, keygen):
 
 
 def decrypt(encrypted_chunks, keygen):
+    """Decrypts the encrypted 100-bit(or less) chunks that are output by encrypt()
+    using the given key generator."""
     decrypted_chunks = []
     for e_chunk in encrypted_chunks:
         target_sum = e_chunk * keygen.multiplier_mod_inverse % keygen.modulus
