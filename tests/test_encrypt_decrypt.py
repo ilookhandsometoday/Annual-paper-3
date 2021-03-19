@@ -1,8 +1,12 @@
 import unittest
 import encrypt_decrypt
+from keygen import Keygen
 
 
 class MyTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.kg = Keygen()
+
     def test__to_binary_leading_zeros(self):
         as_binary = encrypt_decrypt._to_binary(".бb")
         test = True
@@ -28,6 +32,14 @@ class MyTestCase(unittest.TestCase):
 
     def test__restore_chunk(self):
         self.assertEqual(encrypt_decrypt._restore_chunk([3, 4, 5, 1, 20]), "010111000000000000001" + 79*"0")
+
+    def test_decrypt(self):
+        encrypted_text = encrypt_decrypt.encrypt("abc", self.kg)
+        decrypted_text = encrypt_decrypt.decrypt(encrypted_text, self.kg)
+        self.assertEqual(decrypted_text, "abc")
+
+    def test_encrypt(self):
+        self.assertTrue(encrypt_decrypt.encrypt("abc", self.kg))
 
 
 if __name__ == '__main__':

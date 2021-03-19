@@ -15,7 +15,8 @@ def encrypt(text, keygen):
 
 def decrypt(encrypted_chunks, keygen):
     """Decrypts the encrypted 100-bit(or less) chunks that are output by encrypt()
-    using the given key generator."""
+    using the given key generator.
+    Returns the original text"""
     decrypted_chunks = []
     for e_chunk in encrypted_chunks:
         target_sum = e_chunk * keygen.multiplier_mod_inverse % keygen.modulus
@@ -27,7 +28,7 @@ def decrypt(encrypted_chunks, keygen):
         decrypted_chunks.append(_restore_chunk(indices_of_ones))
     decrypted_message = "".join(decrypted_chunks)
     decrypted_message_bytes = _chunk_text(decrypted_message, 8)
-    source_text = _to_text(decrypted_message_bytes)
+    source_text = _to_text(decrypted_message_bytes).rstrip("\x00")
     return source_text
 
 
@@ -35,14 +36,15 @@ def _to_binary(text):
     """Returns a list of characters of the original text in binary form using UTF-8 encoding"""
     as_bytes = bytearray(text, "utf-8")
     binary_values = list(map(lambda byte: bin(byte)[2:], as_bytes))
-    #This is done to make it easier to separate the decrypted message into 8 bit chunks, since bin()
-    #removes leading zeros from a binary representation of a byte
+    # This is done to make it easier to separate the decrypted message into 8 bit chunks, since bin()
+    # removes leading zeros from a binary representation of a byte
     binary_values_uniform = [(8 - len(char_as_bits))*"0" + char_as_bits for char_as_bits in binary_values]
     return binary_values_uniform
 
+
 def _to_text(text_as_bytes):
     """Transforms an iterable of bytes in binary form into a text using UTF-8 encoding"""
-    #turn a binary representation of a byte into an integer to later turn it into a byte array
+    # turn a binary representation of a byte into an integer to later turn it into a byte array
     bytes_as_integers = (int(byte, 2) for byte in text_as_bytes)
     byte_array = bytearray(bytes_as_integers)
     text = byte_array.decode("utf-8")
@@ -52,6 +54,7 @@ def _to_text(text_as_bytes):
 def _chunk_text(text, length):
     """Separates text into chunks of given length and returns a generator"""
     return (text[0+i:length+i] for i in range(0, len(text), length))
+
 
 def _restore_chunk(indices_of_ones):
     """Restores a 100 bit chunk from a list of indices of 1 in a chunk"""
