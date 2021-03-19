@@ -24,8 +24,9 @@ def decrypt(encrypted_chunks, keygen):
                 indices_of_ones.append(keygen.seq.index(element))
         decrypted_chunks.append(_restore_chunk(indices_of_ones))
     decrypted_message = "".join(decrypted_chunks)
-    return decrypted_message
-    #TODO finish this function
+    decrypted_message_bytes = _chunk_text(decrypted_message, 8)
+    source_text = _to_text(decrypted_message_bytes)
+    return source_text
 
 
 def _to_binary(text):
@@ -36,6 +37,14 @@ def _to_binary(text):
     #removes leading zeros from a binary representation of a byte
     binary_values_uniform = [(8 - len(char_as_bits))*"0" + char_as_bits for char_as_bits in binary_values]
     return binary_values_uniform
+
+def _to_text(text_as_bytes):
+    """Transforms an iterable of bytes in binary form into a text using UTF-8 encoding"""
+    #turn a binary representation of a byte into an integer to later turn it into a byte array
+    bytes_as_integers = [int(byte, 2) for byte in text_as_bytes]
+    byte_array = bytearray(bytes_as_integers)
+    text = byte_array.decode("utf-8")
+    return text
 
 
 def _chunk_text(text, length):
