@@ -80,11 +80,15 @@ class Application(Frame):
         except UnicodeDecodeError:
             mb.showerror(title="Ошибка", message="Зашифрованные данные нельзя расшифровать\n" +
                                                  "предложенным закрытым ключом")
-        except ValueError:
+        except (ValueError, SyntaxError):
             mb.showerror(title="Ошибка", message="Неверный формат текста для расшифровки.\n" +
                                                  "[c1, c2, c3,...,ci],\n" +
                                                  "где ci - это целое число")
-
+        except OverflowError:
+            mb.showerror(title="Ошибка", message="Неверный формат текста для расшифровки.\n" +
+                                                 "[c1, c2, c3,...,ci],\n" +
+                                                 "где ci - это целое число.\n" +
+                                                 "Один из элементов предложенной последовательности - не число")
 
 
 class Subframe(Frame):
