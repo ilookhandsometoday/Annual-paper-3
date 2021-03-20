@@ -30,6 +30,8 @@ class Application(Frame):
         self.tab1.encrypt_frame.to_encrypt_text.bind("<KeyRelease>", Application._on_to_encrypt_key_released)
         self.tab1.decrypt_frame.to_decrypt_text.bind("<KeyRelease>", Application._on_to_decrypt_key_released)
 
+        self.tab1.encrypt_frame.encrypt_button.configure(command=self._on_encrypt_button_tab1)
+
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         # self.tab_control.add(self.tab2, text="Пользовательские ключи")
         self.tab_control.pack()
@@ -61,6 +63,11 @@ class Application(Frame):
             widget.master.decrypt_button['state'] = NORMAL
         else:
             widget.master.decrypt_button['state'] = DISABLED
+
+    def _on_encrypt_button_tab1(self):
+        text = self.tab1.encrypt_frame.to_encrypt_text.get("1.0", END)
+        encrypted_text = ed.encrypt(text, self.key_gen)
+        _insert_to_disabled_text(self.tab1.encrypt_frame.encrypted_text, str(encrypted_text))
 
 
 class Subframe(Frame):
