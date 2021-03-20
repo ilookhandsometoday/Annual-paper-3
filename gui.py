@@ -26,6 +26,7 @@ class Application(Frame):
         self.tab1 = GeneratedKeysFrame(self.tab_control)
 
         self.tab1.generate_btn.configure(command=self._generate_keys)
+        self.tab1.encrypt_frame.to_encrypt_text.bind("<KeyRelease>", Application._on_to_encrypt_key_released)
 
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         # self.tab_control.add(self.tab2, text="Пользовательские ключи")
@@ -39,8 +40,19 @@ class Application(Frame):
         _insert_to_disabled_text(self.tab1.multiplier_text, str(self.key_gen.multiplier))
 
     def _generate_keys(self):
+        """Function to generate keys and insert them into the appropriate text fields"""
         self.key_gen = Keygen()
         self._set_keys()
+
+    @classmethod
+    def _on_to_encrypt_key_released(cls, event):
+        widget = event.widget
+        if widget.get("1.0", END).rstrip("\n"):
+            widget.master.encrypt_button['state'] = NORMAL
+        else:
+            widget.master.encrypt_button['state'] = DISABLED
+
+
 
 
 class Subframe(Frame):
@@ -56,6 +68,7 @@ class Subframe(Frame):
 
 
 class GeneratedKeysFrame(Subframe):
+    """Layout for the generated keys tab"""
     def _create_widgets(self):
         self.open_key_label = Label(self, text="Открытый ключ")
         self.open_key_text = Text(self, height=1, state=DISABLED)
@@ -87,6 +100,7 @@ class GeneratedKeysFrame(Subframe):
 
 
 class EncryptFrame(Subframe):
+    """Layout for the element set that is needed to encrypt text"""
     def _create_widgets(self):
         self.to_encrypt_label = Label(self, text="Текст для шифрования")
         self.to_encrypt_text = Text(self, height=3)
@@ -103,6 +117,7 @@ class EncryptFrame(Subframe):
 
 
 class DecryptFrame(Subframe):
+    """Layout for the element set that is needed to decrypt text"""
     def _create_widgets(self):
         self.to_decrypt_label = Label(self, text="Текст для расшифровки")
         self.to_decrypt_text = Text(self, height=3)
