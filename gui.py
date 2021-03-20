@@ -118,7 +118,9 @@ class DecryptFrame(Subframe):
         self.decrypted_text.pack()
 
 
-root = Tk()
-root.title("Шифрователь-5000")
-app = Application(root)
-app.mainloop()
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Шифрователь-5000")
+    app = Application(root)
+    app.mainloop()
+
