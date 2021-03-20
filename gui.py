@@ -1,7 +1,9 @@
+import tkinter.messagebox as mb
 from tkinter import *
 from tkinter.ttk import *
 from keygen import Keygen
 import encrypt_decrypt as ed
+import ast
 
 
 def _insert_to_disabled_text(text_element, string):
@@ -31,6 +33,7 @@ class Application(Frame):
         self.tab1.decrypt_frame.to_decrypt_text.bind("<KeyRelease>", Application._on_to_decrypt_key_released)
 
         self.tab1.encrypt_frame.encrypt_button.configure(command=self._on_encrypt_button_tab1)
+        self.tab1.decrypt_frame.decrypt_button.configure(command=self._on_decrypt_button_tab1)
 
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         # self.tab_control.add(self.tab2, text="Пользовательские ключи")
@@ -68,6 +71,20 @@ class Application(Frame):
         text = self.tab1.encrypt_frame.to_encrypt_text.get("1.0", END)
         encrypted_text = ed.encrypt(text, self.key_gen)
         _insert_to_disabled_text(self.tab1.encrypt_frame.encrypted_text, str(encrypted_text))
+
+    def _on_decrypt_button_tab1(self):
+        try:
+            encrypted_text = ast.literal_eval(self.tab1.decrypt_frame.to_decrypt_text.get("1.0", END))
+            text = ed.decrypt(encrypted_text, self.key_gen)
+            _insert_to_disabled_text(self.tab1.decrypt_frame.decrypted_text, text)
+        except UnicodeDecodeError:
+            mb.showerror(title="Ошибка", message="Зашифрованные данные нельзя расшифровать\n" +
+                                                 "предложенным закрытым ключом")
+        except ValueError:
+            mb.showerror(title="Ошибка", message="Неверный формат текста для расшифровки.\n" +
+                                                 "[c1, c2, c3,...,ci],\n" +
+                                                 "где ci - это целое число")
+
 
 
 class Subframe(Frame):

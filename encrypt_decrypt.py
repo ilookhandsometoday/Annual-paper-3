@@ -1,3 +1,4 @@
+#TODO change methods to accomodate for keys that are not provided by keygen
 def encrypt(text, keygen):
     """Ecnrypts text by using the given Merkle-Hellman key generator.
     Returns a list of encrypted 100-bit(or less) chunks of the original message"""
