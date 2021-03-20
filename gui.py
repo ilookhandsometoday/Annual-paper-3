@@ -37,13 +37,19 @@ class Application(Frame):
         _insert_to_disabled_text(self.tab1.multiplier_text, str(self.key_gen.multiplier))
 
 
-class GeneratedKeysFrame(Frame):
+class Subframe(Frame):
+    """Abstract class created to reuse frame creation code. Should not be used by itself"""
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.pack
+        self.pack()
         self._create_widgets()
 
+    def _create_widgets(self):
+        pass
+
+
+class GeneratedKeysFrame(Subframe):
     def _create_widgets(self):
         self.open_key_label = Label(self, text="Открытый ключ")
         self.open_key_text = Text(self, height=1, state=DISABLED)
@@ -68,9 +74,45 @@ class GeneratedKeysFrame(Frame):
         self.generate_btn = Button(self, text="Сгенерировать ключи")
         self.generate_btn.pack()
 
+        self.encrypt_frame = EncryptFrame(self)
+        self.decrypt_frame = DecryptFrame(self)
+        self.encrypt_frame.pack(side=LEFT)
+        self.decrypt_frame.pack()
+
+
+class EncryptFrame(Subframe):
+    def _create_widgets(self):
+        self.to_encrypt_label = Label(self, text="Текст для шифрования")
+        self.to_encrypt_text = Text(self, height=3)
+        self.to_encrypt_label.pack()
+        self.to_encrypt_text.pack()
+
+        self.encrypt_button = Button(self, text="Зашифровать", state=DISABLED)
+        self.encrypt_button.pack()
+
+        self.encrypted_label = Label(self, text="Зашифрованный текст")
+        self.encrypted_text = Text(self, height=3, state=DISABLED)
+        self.encrypted_label.pack()
+        self.encrypted_text.pack()
+
+
+class DecryptFrame(Subframe):
+    def _create_widgets(self):
+        self.to_decrypt_label = Label(self, text="Текст для расшифровки")
+        self.to_decrypt_text = Text(self, height=3)
+        self.to_decrypt_label.pack()
+        self.to_decrypt_text.pack()
+
+        self.decrypt_button = Button(self, text="Расшифровать", state=DISABLED)
+        self.decrypt_button.pack()
+
+        self.decrypted_label = Label(self, text="Расшифрованный текст")
+        self.decrypted_text = Text(self, height=3, state=DISABLED)
+        self.decrypted_label.pack()
+        self.decrypted_text.pack()
+
 
 root = Tk()
 root.title("Шифрователь-5000")
 app = Application(root)
 app.mainloop()
-
