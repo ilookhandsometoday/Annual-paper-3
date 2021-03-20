@@ -25,6 +25,8 @@ class Application(Frame):
         self.tab_control = Notebook(self)
         self.tab1 = GeneratedKeysFrame(self.tab_control)
 
+        self.tab1.generate_btn.configure(command=self._generate_keys)
+
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         # self.tab_control.add(self.tab2, text="Пользовательские ключи")
         self.tab_control.pack()
@@ -35,6 +37,10 @@ class Application(Frame):
         _insert_to_disabled_text(self.tab1.sequence_text, str(self.key_gen.seq))
         _insert_to_disabled_text(self.tab1.modulus_text, str(self.key_gen.modulus))
         _insert_to_disabled_text(self.tab1.multiplier_text, str(self.key_gen.multiplier))
+
+    def _generate_keys(self):
+        self.key_gen = Keygen()
+        self._set_keys()
 
 
 class Subframe(Frame):
