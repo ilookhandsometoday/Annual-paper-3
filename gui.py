@@ -1,9 +1,9 @@
 import tkinter.messagebox as mb
 from tkinter import *
 from tkinter.ttk import *
+import ast
 from keygen import Keygen
 import encrypt_decrypt as ed
-import ast
 
 
 def _insert_to_disabled_text(text_element, string):
@@ -25,6 +25,7 @@ class Application(Frame):
 
     def _create_widgets(self):
         self.tab_control = Notebook(self)
+        # tab1
         self.tab1 = GeneratedKeysFrame(self.tab_control)
 
         self.tab1.generate_btn.configure(command=self._generate_keys)
@@ -35,8 +36,11 @@ class Application(Frame):
         self.tab1.encrypt_frame.encrypt_button.configure(command=self._on_encrypt_button_tab1)
         self.tab1.decrypt_frame.decrypt_button.configure(command=self._on_decrypt_button_tab1)
 
+        # tab2
+        self.tab2 = UserKeysFrame(self.tab_control)
+
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
-        # self.tab_control.add(self.tab2, text="Пользовательские ключи")
+        self.tab_control.add(self.tab2, text="Пользовательские ключи")
         self.tab_control.pack()
 
     def _set_keys(self):
@@ -76,7 +80,6 @@ class Application(Frame):
         try:
             encrypted_text = ast.literal_eval(self.tab1.decrypt_frame.to_decrypt_text.get("1.0", END))
             text = ed.decrypt(encrypted_text, self.key_gen)
-            _insert_to_disabled_text(self.tab1.decrypt_frame.decrypted_text, text)
         except UnicodeDecodeError:
             mb.showerror(title="Ошибка", message="Зашифрованные данные нельзя расшифровать\n" +
                                                  "предложенным закрытым ключом")
@@ -89,10 +92,13 @@ class Application(Frame):
                                                  "[c1, c2, c3,...,ci],\n" +
                                                  "где ci - это целое число.\n" +
                                                  "Один из элементов предложенной последовательности - не число")
+        else:
+            _insert_to_disabled_text(self.tab1.decrypt_frame.decrypted_text, text)
 
 
 class Subframe(Frame):
     """Abstract class created to reuse frame creation code. Should not be used by itself"""
+
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -105,6 +111,7 @@ class Subframe(Frame):
 
 class GeneratedKeysFrame(Subframe):
     """Layout for the generated keys tab"""
+
     def _create_widgets(self):
         self.open_key_label = Label(self, text="Открытый ключ")
         self.open_key_text = Text(self, height=1, state=DISABLED)
@@ -135,8 +142,39 @@ class GeneratedKeysFrame(Subframe):
         self.decrypt_frame.pack()
 
 
+class UserKeysFrame(Subframe):
+    """Layout for the user keys tab"""
+
+    def _create_widgets(self):
+        self.open_key_label = Label(self, text="Открытый ключ")
+        self.open_key_text = Entry(self)
+        self.open_key_label.pack()
+        self.open_key_text.pack()
+
+        self.sequence_label = Label(self, text="Последовательность(закрытый ключ)")
+        self.sequence_text = Entry(self)
+        self.sequence_label.pack()
+        self.sequence_text.pack()
+
+        self.modulus_label = Label(self, text="Модуль(закрытый ключ)")
+        self.modulus_text = Entry(self)
+        self.modulus_label.pack()
+        self.modulus_text.pack()
+
+        self.multiplier_label = Label(self, text="Множитель(закрытый ключ)")
+        self.multiplier_text = Entry(self)
+        self.multiplier_label.pack()
+        self.multiplier_text.pack()
+
+        self.encrypt_frame = EncryptFrame(self)
+        self.decrypt_frame = DecryptFrame(self)
+        self.encrypt_frame.pack(side=LEFT)
+        self.decrypt_frame.pack(side=RIGHT)
+
+
 class EncryptFrame(Subframe):
     """Layout for the element set that is needed to encrypt text"""
+
     def _create_widgets(self):
         self.to_encrypt_label = Label(self, text="Текст для шифрования")
         self.to_encrypt_text = Text(self, height=3)
@@ -154,6 +192,7 @@ class EncryptFrame(Subframe):
 
 class DecryptFrame(Subframe):
     """Layout for the element set that is needed to decrypt text"""
+
     def _create_widgets(self):
         self.to_decrypt_label = Label(self, text="Текст для расшифровки")
         self.to_decrypt_text = Text(self, height=3)
@@ -174,4 +213,3 @@ if __name__ == "__main__":
     root.title("Шифрователь-5000")
     app = Application(root)
     app.mainloop()
-

@@ -1,6 +1,6 @@
 import unittest
-from keygen import Keygen
 import math
+from keygen import Keygen
 
 
 class MyTestCase(unittest.TestCase):
