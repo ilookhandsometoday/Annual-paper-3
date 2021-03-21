@@ -39,6 +39,9 @@ class Application(Frame):
         # tab2
         self.tab2 = UserKeysFrame(self.tab_control)
 
+        self.tab2.encrypt_frame.to_encrypt_text.bind("<KeyRelease>", Application._on_to_encrypt_key_released)
+        self.tab2.decrypt_frame.to_decrypt_text.bind("<KeyRelease>", Application._on_to_decrypt_key_released)
+
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         self.tab_control.add(self.tab2, text="Пользовательские ключи")
         self.tab_control.pack()
