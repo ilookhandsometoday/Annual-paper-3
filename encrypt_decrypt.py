@@ -20,18 +20,29 @@ def encrypt(text, keygen, open_key=[]):
     return encrypted_chunks
 
 
-def decrypt(encrypted_chunks, keygen):
+def decrypt(encrypted_chunks, keygen, sequence=[], multiplier=None, modulus=None):
     """Decrypts the encrypted 100-bit(or less) chunks that are output by encrypt()
-    using the given key generator.
+    using the given key generator or a given private key.
     Returns the original text"""
+    if sequence and multiplier is not None and modulus is not None:
+        _seq = sequence
+        _multiplier = multiplier
+        _modulus = modulus
+        _multiplier_mod_inverse = pow(multiplier, -1, modulus)
+    else:
+        _seq = keygen.seq
+        _multiplier = keygen.multiplier
+        _modulus = keygen.modulus
+        _multiplier_mod_inverse = keygen.multiplier_mod_inverse
+
     decrypted_chunks = []
     for e_chunk in encrypted_chunks:
-        target_sum = e_chunk * keygen.multiplier_mod_inverse % keygen.modulus
+        target_sum = e_chunk * _multiplier_mod_inverse % _modulus
         indices_of_ones = []
-        for element in reversed(keygen.seq):
+        for element in reversed(_seq):
             if element <= target_sum:
                 target_sum = target_sum - element
-                indices_of_ones.append(keygen.seq.index(element))
+                indices_of_ones.append(_seq.index(element))
         decrypted_chunks.append(_restore_chunk(indices_of_ones))
     decrypted_message = "".join(decrypted_chunks)
     decrypted_message_bytes = _chunk_text(decrypted_message, 8)

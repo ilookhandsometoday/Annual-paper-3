@@ -113,13 +113,17 @@ class Application(Frame):
                     text = self.tab2.encrypt_frame.to_encrypt_text.get("1.0", END)
                     encrypted_text = ed.encrypt(text, self.key_gen, open_key)
                     _insert_to_disabled_text(self.tab2.encrypt_frame.encrypted_text, str(encrypted_text))
+                elif not isinstance(open_key, list):
+                    mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE +
+                                 "На вход подан не список.")
                 else:
                     mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE +
-                                 "Один из элементов списка не число\n" +
-                                 "или на вход подан не список.")
+                                 "Один из элементов списка не число")
         else:
             mb.showerror("Ошибка", "Открытый ключ не задан!")
 
+    def _on_decrypt_button_tab2(self):
+        raise NotImplementedError
 
 class Subframe(Frame):
     """Abstract class created to reuse frame creation code. Should not be used by itself"""
