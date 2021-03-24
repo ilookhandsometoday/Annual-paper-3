@@ -106,7 +106,7 @@ class Application(Frame):
 
             open_key = ast.literal_eval(open_key_entry)
             if isinstance(open_key, list) and all(isinstance(element, int) for element in open_key):
-                
+                pass
 
 
         else:
@@ -123,7 +123,7 @@ class Subframe(Frame):
         self._create_widgets()
 
     def _create_widgets(self):
-        pass
+        raise NotImplementedError
 
 
 class GeneratedKeysFrame(Subframe):

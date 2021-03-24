@@ -1,14 +1,20 @@
 #TODO change methods to accomodate for keys that are not provided by keygen
-def encrypt(text, keygen):
-    """Ecnrypts text by using the given Merkle-Hellman key generator.
+def encrypt(text, keygen, open_key=[]):
+    """Ecnrypts text by using the given Merkle-Hellman key generator
+    or a given open key.
     Returns a list of encrypted 100-bit(or less) chunks of the original message"""
+    if open_key:
+        _open_key = open_key
+    else:
+        _open_key = keygen.open_key
+
     text_as_binary = "".join(_to_binary(text))
     encrypted_chunks = []
     # message is split into chunks of 100 bits as per recommendations from Merkle and Hellman
     for chunk in _chunk_text(text_as_binary, 100):
         # a variable for the final sum
         encrypted_chunk = 0
-        for bit, open_key_element in zip(chunk, keygen.open_key):
+        for bit, open_key_element in zip(chunk, _open_key):
             encrypted_chunk += int(bit) * open_key_element
         encrypted_chunks.append(encrypted_chunk)
     return encrypted_chunks
