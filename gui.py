@@ -5,6 +5,10 @@ import ast
 from keygen import Keygen
 import encrypt_decrypt as ed
 
+_WRONG_FORMAT_ERROR_MESSAGE = "Неверный формат текста для расшифровки.\n" + \
+                              "[c1, c2, c3,...,ci],\n" + \
+                              "где ci - это целое число.\n"
+
 
 def _insert_to_disabled_text(text_element, string):
     """Utility function that allows to insert text into a disabled tkinter Text widget"""
@@ -15,6 +19,7 @@ def _insert_to_disabled_text(text_element, string):
 
 
 class Application(Frame):
+
     def __init__(self, master=None):
         super().__init__(master)
         self.key_gen = Keygen()
@@ -63,7 +68,7 @@ class Application(Frame):
     @classmethod
     def _on_to_encrypt_key_released(cls, event):
         widget = event.widget
-        if widget.get("1.0", END).rstrip("\n"):
+        if widget.get("1.0", END).rstrip():
             widget.master.encrypt_button['state'] = NORMAL
         else:
             widget.master.encrypt_button['state'] = DISABLED
@@ -71,7 +76,7 @@ class Application(Frame):
     @classmethod
     def _on_to_decrypt_key_released(cls, event):
         widget = event.widget
-        if widget.get("1.0", END).rstrip("\n"):
+        if widget.get("1.0", END).rstrip():
             widget.master.decrypt_button['state'] = NORMAL
         else:
             widget.master.decrypt_button['state'] = DISABLED
@@ -89,26 +94,29 @@ class Application(Frame):
             mb.showerror(title="Ошибка", message="Зашифрованные данные нельзя расшифровать\n" +
                                                  "предложенным закрытым ключом")
         except (ValueError, SyntaxError):
-            mb.showerror(title="Ошибка", message="Неверный формат текста для расшифровки.\n" +
-                                                 "[c1, c2, c3,...,ci],\n" +
-                                                 "где ci - это целое число")
+            mb.showerror(title="Ошибка", message=_WRONG_FORMAT_ERROR_MESSAGE)
         except OverflowError:
-            mb.showerror(title="Ошибка", message="Неверный формат текста для расшифровки.\n" +
-                                                 "[c1, c2, c3,...,ci],\n" +
-                                                 "где ci - это целое число.\n" +
-                                                 "Один из элементов предложенной последовательности - не число")
+            mb.showerror(title="Ошибка", message=(_WRONG_FORMAT_ERROR_MESSAGE +
+                                                  "Один из элементов предложенной последовательности - не число"))
         else:
             _insert_to_disabled_text(self.tab1.decrypt_frame.decrypted_text, text)
 
     def _on_encrypt_button_tab2(self):
-        open_key_entry = self.tab2.open_key_text.get().rstrip('\n')
+        open_key_entry = self.tab2.open_key_text.get().strip()
         if open_key_entry:
-
-            open_key = ast.literal_eval(open_key_entry)
-            if isinstance(open_key, list) and all(isinstance(element, int) for element in open_key):
-                pass
-
-
+            try:
+                open_key = ast.literal_eval(open_key_entry)
+            except SyntaxError:
+                mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE)
+            else:
+                if isinstance(open_key, list) and all(isinstance(element, int) for element in open_key):
+                    text = self.tab2.encrypt_frame.to_encrypt_text.get("1.0", END)
+                    encrypted_text = ed.encrypt(text, self.key_gen, open_key)
+                    _insert_to_disabled_text(self.tab2.encrypt_frame.encrypted_text, str(encrypted_text))
+                else:
+                    mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE +
+                                 "Один из элементов списка не число\n" +
+                                 "или на вход подан не список.")
         else:
             mb.showerror("Ошибка", "Открытый ключ не задан!")
 
