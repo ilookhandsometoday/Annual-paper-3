@@ -1,3 +1,4 @@
+"""Provides a key generator for Merkle-Hellman cryptosystem"""
 import random
 import math
 
@@ -47,7 +48,7 @@ class Keygen:
         sequence = []
         for index in range(1, 100, 1):
             lower_bound = (2 ** (index - 1) - 1) * (2 ** 100) + 1
-            upper_bound = (2 ** (index - 1))*(2**100)
+            upper_bound = (2 ** (index - 1)) * (2 ** 100)
             sequence.append(_RNG.randint(lower_bound, upper_bound))
         self._seq = sequence
 
@@ -67,7 +68,7 @@ class Keygen:
     def _find_modulus(self):
         """Finds a modulus according to recommendations from
                \"Hiding information and signatures in trapdoor knapsacks\""""
-        modulus = _RNG.randint((2**201) + 1, (2**202) - 1)
+        modulus = _RNG.randint((2 ** 201) + 1, (2 ** 202) - 1)
         self._modulus = modulus
 
     def _find_open_key(self):
@@ -75,5 +76,3 @@ class Keygen:
 
     def _find_multiplier_mod_inverse(self):
         self._multiplier_mod_inverse = pow(self._multiplier, -1, self._modulus)
-
-

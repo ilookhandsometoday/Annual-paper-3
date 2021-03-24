@@ -1,4 +1,7 @@
-#TODO change methods to accomodate for keys that are not provided by keygen
+"""Encrypts and decrypts text in accordance with Merkle-Hellman cryptosystem.
+Can be used with keygen and on its own"""
+
+
 def encrypt(text, keygen, open_key=[]):
     """Ecnrypts text by using the given Merkle-Hellman key generator
     or a given open key.
@@ -56,7 +59,7 @@ def _to_binary(text):
     binary_values = list(map(lambda byte: bin(byte)[2:], as_bytes))
     # This is done to make it easier to separate the decrypted message into 8 bit chunks, since bin()
     # removes leading zeros from a binary representation of a byte
-    binary_values_uniform = [(8 - len(char_as_bits))*"0" + char_as_bits for char_as_bits in binary_values]
+    binary_values_uniform = [(8 - len(char_as_bits)) * "0" + char_as_bits for char_as_bits in binary_values]
     return binary_values_uniform
 
 
@@ -71,7 +74,7 @@ def _to_text(text_as_bytes):
 
 def _chunk_text(text, length):
     """Separates text into chunks of given length and returns a generator"""
-    return (text[0+i:length+i] for i in range(0, len(text), length))
+    return (text[0 + i:length + i] for i in range(0, len(text), length))
 
 
 def _restore_chunk(indices_of_ones):
@@ -83,5 +86,3 @@ def _restore_chunk(indices_of_ones):
         else:
             restored_chunk = restored_chunk + "0"
     return restored_chunk
-
-

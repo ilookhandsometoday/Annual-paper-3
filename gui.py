@@ -5,9 +5,24 @@ import ast
 from keygen import Keygen
 import encrypt_decrypt as ed
 
-_WRONG_FORMAT_ERROR_MESSAGE = "Неверный формат текста для расшифровки.\n" + \
-                              "[c1, c2, c3,...,ci],\n" + \
-                              "где ci - это целое число.\n"
+_TEXT_WRONG_FORMAT_ERROR_MESSAGE = "Неверный формат текста для расшифровки.\n" + \
+                                   "Текст для расшифровки должен быть в виде\n" + \
+                                   "[c1, c2, c3,...,ci],\n" + \
+                                   "где ci - это целое число.\n"
+
+_OPEN_KEY_WRONG_FORMAT_ERROR_MESSAGE = "Неверный формат ключа.\n" + \
+                                       "Ключ должен быть в виде\n" + \
+                                       "[c1, c2, c3,...,ci],\n" + \
+                                       "где ci - это целое число.\n"
+
+_WRONG_PRIVATE_KEY_ERROR_MESSAGE = "Зашифрованные данные нельзя расшифровать\n" + \
+                                   "предложенным закрытым ключом"
+
+_PRIVATE_KEY_WRONG_FORMAT_ERROR_MESSAGE = "Неверный формат модуля/множителя/последовательности закрытого ключа." + \
+                                          "\nМодуль и множитель должны быть целыми числами\n" + \
+                                          "Последовательность должна быть в виде\n" + \
+                                          "[c1, c2, c3,...,ci],\n" + \
+                                          "где ci - это целое число.\n"
 
 
 def _insert_to_disabled_text(text_element, string):
@@ -48,6 +63,7 @@ class Application(Frame):
         self.tab2.decrypt_frame.to_decrypt_text.bind("<KeyRelease>", Application._on_to_decrypt_key_released)
 
         self.tab2.encrypt_frame.encrypt_button.configure(command=self._on_encrypt_button_tab2)
+        self.tab2.decrypt_frame.decrypt_button.configure(command=self._on_decrypt_button_tab2)
 
         self.tab_control.add(self.tab1, text="Ключи, сгенерированные автоматически")
         self.tab_control.add(self.tab2, text="Пользовательские ключи")
@@ -91,12 +107,11 @@ class Application(Frame):
             encrypted_text = ast.literal_eval(self.tab1.decrypt_frame.to_decrypt_text.get("1.0", END))
             text = ed.decrypt(encrypted_text, self.key_gen)
         except UnicodeDecodeError:
-            mb.showerror(title="Ошибка", message="Зашифрованные данные нельзя расшифровать\n" +
-                                                 "предложенным закрытым ключом")
+            mb.showerror(title="Ошибка", message=_WRONG_PRIVATE_KEY_ERROR_MESSAGE)
         except (ValueError, SyntaxError):
-            mb.showerror(title="Ошибка", message=_WRONG_FORMAT_ERROR_MESSAGE)
+            mb.showerror(title="Ошибка", message=_TEXT_WRONG_FORMAT_ERROR_MESSAGE)
         except OverflowError:
-            mb.showerror(title="Ошибка", message=(_WRONG_FORMAT_ERROR_MESSAGE +
+            mb.showerror(title="Ошибка", message=(_TEXT_WRONG_FORMAT_ERROR_MESSAGE +
                                                   "Один из элементов предложенной последовательности - не число"))
         else:
             _insert_to_disabled_text(self.tab1.decrypt_frame.decrypted_text, text)
@@ -107,23 +122,61 @@ class Application(Frame):
             try:
                 open_key = ast.literal_eval(open_key_entry)
             except SyntaxError:
-                mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE)
+                mb.showerror("Ошибка", _OPEN_KEY_WRONG_FORMAT_ERROR_MESSAGE)
             else:
                 if isinstance(open_key, list) and all(isinstance(element, int) for element in open_key):
                     text = self.tab2.encrypt_frame.to_encrypt_text.get("1.0", END)
                     encrypted_text = ed.encrypt(text, self.key_gen, open_key)
                     _insert_to_disabled_text(self.tab2.encrypt_frame.encrypted_text, str(encrypted_text))
                 elif not isinstance(open_key, list):
-                    mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE +
+                    mb.showerror("Ошибка", _OPEN_KEY_WRONG_FORMAT_ERROR_MESSAGE +
                                  "На вход подан не список.")
                 else:
-                    mb.showerror("Ошибка", _WRONG_FORMAT_ERROR_MESSAGE +
+                    mb.showerror("Ошибка", _OPEN_KEY_WRONG_FORMAT_ERROR_MESSAGE +
                                  "Один из элементов списка не число")
         else:
             mb.showerror("Ошибка", "Открытый ключ не задан!")
 
     def _on_decrypt_button_tab2(self):
-        raise NotImplementedError
+        sequence_entry = self.tab2.sequence_text.get().strip()
+        modulus_entry = self.tab2.modulus_text.get().strip()
+        multiplier_entry = self.tab2.multiplier_text.get().strip()
+
+        if sequence_entry and modulus_entry and multiplier_entry:
+            try:
+                modulus = ast.literal_eval(modulus_entry)
+                multiplier = ast.literal_eval(multiplier_entry)
+                sequence = ast.literal_eval(sequence_entry)
+            except SyntaxError:
+                mb.showerror("Ошибка", _PRIVATE_KEY_WRONG_FORMAT_ERROR_MESSAGE)
+            else:
+                if isinstance(sequence, list) and all(isinstance(element, int) for element in sequence) \
+                        and isinstance(modulus, int) and isinstance(multiplier, int):
+                    try:
+                        encrypted_text = ast.literal_eval(self.tab2.decrypt_frame.to_decrypt_text.get("1.0", END))
+                    except SyntaxError:
+                        mb.showerror("Ошибка", _TEXT_WRONG_FORMAT_ERROR_MESSAGE)
+                    else:
+                        if isinstance(encrypted_text, list) \
+                                and all(isinstance(element, int) for element in encrypted_text):
+                            try:
+                                text = ed.decrypt(encrypted_text, self.key_gen, sequence, multiplier, modulus)
+                            except UnicodeDecodeError:
+                                mb.showerror("Ошибка", _WRONG_PRIVATE_KEY_ERROR_MESSAGE)
+                            except ValueError:
+                                mb.showerror("Ошибка", "Модуль и множитель не взаимно простые!")
+                            else:
+                                _insert_to_disabled_text(self.tab2.decrypt_frame.decrypted_text, text)
+                        elif not isinstance(encrypted_text, list):
+                            mb.showerror("Ошибка", _TEXT_WRONG_FORMAT_ERROR_MESSAGE + "На вход подан не список")
+                        else:
+                            mb.showerror("Ошибка", _TEXT_WRONG_FORMAT_ERROR_MESSAGE + "Один/несколько элементов"
+                                                                                      "списка не число")
+                else:
+                    mb.showerror("Ошибка", _PRIVATE_KEY_WRONG_FORMAT_ERROR_MESSAGE)
+        else:
+            mb.showerror("Ошибка", "Закрытый ключ не задан!")
+
 
 class Subframe(Frame):
     """Abstract class created to reuse frame creation code. Should not be used by itself"""
